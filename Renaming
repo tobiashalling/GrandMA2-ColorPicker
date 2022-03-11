@@ -1,0 +1,20 @@
+function print (msg)
+    gma.feedback(msg)
+    gma.echo(msg)
+end
+
+function main()
+    local colors = {
+    'White', 'Red', 'Orange', 'Yellow', 'Lime', 'Green', 
+    'Coral', 'Turquoise', 'LightBlue', 'Blue', 'Purple', 
+    'Pink', 'Magenta',}
+    
+    for i = 1, 2 do
+        local col = colors[i+1]
+        gma.cmd('Label Sequence 1.802'..'\"'..col..'\"')
+    end
+end
+
+return main
+
+-- VIRKER PT IKKE (16/2-22)

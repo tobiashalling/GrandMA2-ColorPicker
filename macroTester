@@ -1,0 +1,94 @@
+function print (msg)
+    gma.feedback(msg)
+    gma.echo(msg)
+end
+
+function getNonEmptyUserInput (msg, placeholder)
+    placeholder = placeholder or ''
+    local userInput = ''
+    repeat
+      userInput = gma.textinput(msg, placeholder)
+    until userInput ~= placeholder
+  
+    return userInput
+end
+
+function main()
+
+    -- Setting variables for later use
+    gma.cmd('setvar $EmptyColors = "Image 17 thru 29"')
+    gma.cmd('setvar $Fix1Colors = "Image 209 thru 221"')
+    gma.cmd('setvar $Fix2Colors = "Image 225 thru 237"')
+    gma.cmd('setvar $Fix3Colors = "Image 241 thru 253"')
+    
+    -- Color names for use in renaming
+    local colors = {
+    'White', 'Red', 'Orange', 'Yellow', 'Lime', 'Green', 
+    'Coral', 'Turquoise', 'LightBlue', 'Blue', 'Purple', 
+    'Pink', 'Magenta',}
+    
+    gma.cmd('blind') -- turns blind mode on such that no dmx is output
+    macroNum = 0
+    for j = 1, 2 do
+        for i = 1, 13 do
+            local colorNum = i
+            macroNum = macroNum + 1
+            print('macroNum = '..macroNum)
+
+            -- Create macro
+            if macroNum < 10 then
+                gma.cmd('Store Macro 1.80'..macroNum)
+                gma.cmd('Label Macro 1.80'..macroNum..' \"'..colors[i]..'\"')
+            else
+                gma.cmd('Store Macro 1.8'..macroNum)
+                gma.cmd('Label Macro 1.8'..macroNum..' \"'..colors[i]..'\"')
+            end
+            
+            -- nested table with lines of code to be written into the macross
+            local macroLines = {
+                {"off sequence 801 thru 813", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 33  At Image 209 /o"},
+                {"go sequence 802", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 34  At Image 210 /o"},
+                {"go sequence 803", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 35  At Image 211 /o"},
+                {"go sequence 804", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 36  At Image 212 /o"},
+                {"go sequence 805", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 37  At Image 213 /o"},
+                {"go sequence 806", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 38  At Image 214 /o"},
+                {"go sequence 807", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 39  At Image 215 /o"},
+                {"go sequence 808", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 40  At Image 216 /o"},
+                {"go sequence 809", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 41  At Image 217 /o"},
+                {"go sequence 810", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 42  At Image 218 /o"},
+                {"go sequence 811", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 43  At Image 219 /o"},
+                {"go sequence 812", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 44  At Image 220 /o"},
+                {"go sequence 813", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 45  At Image 221 /o"},
+                {"off sequence 814 thru 826", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 33  At Image 225 /o"},
+                {"go sequence 815", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 34  At Image 226 /o"},
+                {"go sequence 816", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 35  At Image 227 /o"},
+                {"go sequence 817", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 36  At Image 228 /o"},
+                {"go sequence 818", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 37  At Image 229 /o"},
+                {"go sequence 819", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 38  At Image 230 /o"},
+                {"go sequence 820", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 39  At Image 231 /o"},
+                {"go sequence 821", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 40  At Image 232 /o"},
+                {"go sequence 822", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 41  At Image 233 /o"},
+                {"go sequence 823", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 42  At Image 234 /o"},
+                {"go sequence 824", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 43  At Image 235 /o"},
+                {"go sequence 825", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 44  At Image 236 /o"},
+                {"go sequence 826", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 45  At Image 237 /o"},
+                }
+            
+            for k = 1, 3 do
+                if macroNum < 10 then
+                    gma.cmd('Store Macro 1.80' .. macroNum .. '.' .. k)
+                    gma.cmd('Assign Macro 1.80'..macroNum..".".. k .."/cmd=\"" .. macroLines[macroNum][k] .. "\"")
+                else
+                    gma.cmd('Store Macro 1.8' .. macroNum .. '.' .. k)
+                    gma.cmd('Assign Macro 1.8'..macroNum..".".. k .."/cmd=\"" .. macroLines[macroNum][k] .. "\"")
+                end
+            end
+        end
+    end
+    gma.cmd('blind') -- turns blind mode off, such that dmx can be sent again
+    print('End of plugin')
+end
+
+return main
+
+-- 209-221, 225-237, 241-253, 257

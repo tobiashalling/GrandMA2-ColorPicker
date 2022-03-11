@@ -1,0 +1,58 @@
+-- KODE ER FULDT FUNKTIONEL
+
+function print (msg)
+    gma.feedback(msg)
+    gma.echo(msg)
+end
+
+function main()
+    local colors = {
+    'White', 'Red', 'Orange', 'Yellow', 'Lime', 'Green', 
+    'Coral', 'Turquoise', 'LightBlue', 'Blue', 'Purple', 
+    'Pink', 'Magenta',}
+    
+
+    --giving color info
+    seqNum = 0
+    for j = 1, 3, 1 do -- need better way to denote number of groups
+        local groupNum = j
+        for i = 1, 13, 1 do
+            local colorNum = i
+            seqNum = seqNum + 1 
+            print(seqNum)
+            gma.cmd('Group '..groupNum)
+            gma.cmd('At Preset 4.'..colorNum)
+
+            -- if loop sørger for at der bliver talt rigtigt
+            if seqNum < 10 then
+                gma.cmd('Store Sequence 1.80'..seqNum)
+            else
+                gma.cmd('Store Sequence 1.8'..seqNum)
+            end
+            
+            -- renaming of sequence
+            -- if loop sørger for at der tælles rigtigt
+            if seqNum < 10 then
+                gma.cmd('Label Sequence 1.80'..seqNum..' \"'..colors[i]..'\"')
+            else
+                gma.cmd('Label Sequence 1.8'..seqNum..' \"'..colors[i]..'\"')
+            end
+            print('Inner loop '..i..' done')
+        end
+    end
+end
+
+return main
+
+--[[ KODE DER VIRKER
+seqNum = 0
+for j = 1, 3, 1 do
+for i = 1, 13, 1 do
+   local colorNum = i
+   seqNum = seqNum + 1
+   print('seqNum = '..seqNum)
+   print('colorNum = '..colorNum)
+   print('Inner loop '..i..' done')
+end
+end
+]]--
