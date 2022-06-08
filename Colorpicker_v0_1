@@ -1,0 +1,234 @@
+--[[
+    The code below is an automation of sequence and macro production. The sequences
+    are produced with color information in them such that they can be used in a colorpicker.
+    Macros are then produced to run the sequences AND refer to color images. This gives the opporitunity
+    to use images to refer to what color one is about to switch to. 
+
+    Some prerequisites are needed. 
+    The code is written with the intend of having 13 colors autocreated (global merge) with 1 unit of
+    saturation between them. This also the code does not work with gobo colors, getting that to work will
+    need some manual editing of sequences.
+
+    Revision: 1
+    Code by Tobias Halling
+]]--
+
+
+-- lav funktion der kontrollerer at grupper og farver ligger rigtigt.
+
+
+function print (msg)
+    gma.feedback(msg)
+    gma.echo(msg)
+end
+
+function getNonEmptyUserInput (msg, placeholder)
+    placeholder = placeholder or ''
+    local userInput = ''
+    repeat
+      userInput = gma.textinput(msg, placeholder)
+    until userInput ~= placeholder
+    return userInput
+end
+
+function startEnd(msg, placeholder) -- ! skal kontrolleres !
+    placeholder = placeholder or ''
+    local userInput = ''
+    userInput = gma.textinput(msg, placeholder)
+    if userInput == 'y' then
+        return userInput
+    else
+        return end
+end
+
+function startCheck()
+    startEnd('Are your fixture groups 1 & 2? (y,n)', 'n')
+    startEnd('Is your autocreated colors at 1 thru 13? (y,n)', 'n')
+end
+
+function seq()
+    local colors = {
+    'White', 'Red', 'Orange', 'Yellow', 'Lime', 'Green', 
+    'Coral', 'Cyan', 'LightBlue', 'Blue', 'Purple', 
+    'Pink', 'Magenta',}
+    
+
+    --giving color info
+    seqNum = 0
+    for j = 1, 3, 1 do -- need better way to denote number of groups
+        local groupNum = j
+        for i = 1, 13, 1 do
+            local colorNum = i
+            seqNum = seqNum + 1 
+            print(seqNum)
+            gma.cmd('Group '..groupNum)
+            gma.cmd('At Preset 4.'..colorNum)
+
+            -- if loop sørger for at der bliver talt rigtigt
+            if seqNum < 10 then
+                gma.cmd('Store Sequence 1.80'..seqNum)
+            else
+                gma.cmd('Store Sequence 1.8'..seqNum)
+            end
+            
+            -- renaming of sequence
+            -- if loop sørger for at der tælles rigtigt
+            if seqNum < 10 then
+                gma.cmd('Label Sequence 1.80'..seqNum..' \"'..colors[i]..'\"')
+            else
+                gma.cmd('Label Sequence 1.8'..seqNum..' \"'..colors[i]..'\"')
+            end
+            print('Inner loop '..i..' done')
+        end
+    end
+end
+
+function mac()
+
+    -- Setting variables for later use
+    gma.cmd('setvar $EmptyColors = "Image 17 thru 29"')
+    gma.cmd('setvar $Fix1Colors = "Image 209 thru 221"')
+    gma.cmd('setvar $Fix2Colors = "Image 225 thru 237"')
+    gma.cmd('setvar $Fix3Colors = "Image 241 thru 253"')
+    
+    -- Color names for use in renaming
+    local colors = {
+    'White', 'Red', 'Orange', 'Yellow', 'Lime', 'Green', 
+    'Coral', 'Cyan', 'LightBlue', 'Blue', 'Purple', 
+    'Pink', 'Magenta',}
+    
+    gma.cmd('blind') -- turns blind mode on such that no dmx is output
+    macroNum = 0
+    for j = 1, 2 do
+        for i = 1, 13 do
+            local colorNum = i
+            macroNum = macroNum + 1
+            print('macroNum = '..macroNum)
+
+            -- Create macro
+                if macroNum < 10 then
+                    gma.cmd('Store Macro 1.80'..macroNum)
+                    gma.cmd('Label Macro 1.80'..macroNum..' \"'..colors[i] .. j ..'\"')
+                else
+                    gma.cmd('Store Macro 1.8'..macroNum)
+                    gma.cmd('Label Macro 1.8'..macroNum..' \"'..colors[i] .. j ..'\"')
+                end
+
+                -- nested table with lines of code to be written into the macross
+            local macroLines = {
+                {"off sequence 801 thru 813", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 33  At Image 209 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 802", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 34  At Image 210 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 803", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 35  At Image 211 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 804", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 36  At Image 212 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 805", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 37  At Image 213 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 806", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 38  At Image 214 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 807", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 39  At Image 215 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 808", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 40  At Image 216 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 809", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 41  At Image 217 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 810", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 42  At Image 218 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 811", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 43  At Image 219 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 812", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 44  At Image 220 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 813", "Copy $EmptyColors  At $Fix1Colors /m", "Copy Image 45  At Image 221 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"off sequence 814 thru 826", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 33  At Image 225 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 815", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 34  At Image 226 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 816", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 35  At Image 227 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 817", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 36  At Image 228 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 818", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 37  At Image 229 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 819", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 38  At Image 230 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 820", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 39  At Image 231 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 821", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 40  At Image 232 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 822", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 41  At Image 233 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 823", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 42  At Image 234 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 824", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 43  At Image 235 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 825", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 44  At Image 236 /o", "Copy $EmptyColors At $AllColors /o"},
+                {"go sequence 826", "Copy $EmptyColors  At $Fix2Colors /m", "Copy Image 45  At Image 237 /o", "Copy $EmptyColors At $AllColors /o"},
+                }
+            
+            for k = 1, 4 do
+                if macroNum < 10 then
+                    gma.cmd('Store Macro 1.80' .. macroNum .. '.' .. k)
+                    gma.cmd('Assign Macro 1.80'..macroNum..".".. k .."/cmd=\"" .. macroLines[macroNum][k] .. "\"")
+                else
+                    gma.cmd('Store Macro 1.8' .. macroNum .. '.' .. k)
+                    gma.cmd('Assign Macro 1.8'..macroNum..".".. k .."/cmd=\"" .. macroLines[macroNum][k] .. "\"")
+                end
+            end
+        end
+    end
+    gma.cmd('blind') -- turns blind mode off, such that dmx can be sent again
+end
+
+function allChange()
+    -- construction of all fixture color change macro
+
+        -- Setting variables for later use
+        gma.cmd('setvar $AllColors = "Image 33 thru 45"')
+
+        -- Color names for use in renaming
+        local allColors = {
+        'All White', 'All Red', 'All Orange', 'All Yellow', 'All Lime', 'All Green', 
+        'All Coral', 'All Cyan', 'All LightBlue', 'All Blue', 'All Purple', 
+        'All Pink', 'All Magenta',}
+    
+        macroNum = 0
+        for i = 1, 13 do
+            local colorNum = i
+            macroNum = macroNum + 1
+            print('macroNum = '..macroNum)
+            
+            -- Creating all color change macros --
+            local allNum = 784 + macroNum
+            gma.cmd('Store Macro 1.'..allNum)
+            gma.cmd('Label Macro 1.'..allNum..' \"'..allColors[i] ..'\"')
+            
+            local allLines = {
+                {"go macro 801 + 814 + 827", "Copy Image 33  At Image 33 /o"}, {"go macro 802 + 815 + 828", "Copy Image 34  At Image 34 /o"}, 
+                {"go macro 803 + 816 + 829", "Copy Image 35  At Image 35 /o"}, {"go macro 804 + 817 + 830", "Copy Image 36  At Image 36 /o"}, 
+                {"go macro 805 + 818 + 831", "Copy Image 37  At Image 37 /o"}, {"go macro 806 + 819 + 832", "Copy Image 38  At Image 38 /o"},
+                {"go macro 807 + 820 + 833", "Copy Image 39  At Image 39 /o"}, {"go macro 808 + 821 + 834", "Copy Image 40  At Image 40 /o"}, 
+                {"go macro 809 + 822 + 835", "Copy Image 41  At Image 41 /o"}, {"go macro 810 + 823 + 836", "Copy Image 42  At Image 42 /o"}, 
+                {"go macro 811 + 824 + 837", "Copy Image 43  At Image 43 /o"}, {"go macro 812 + 825 + 838", "Copy Image 44  At Image 44 /o"},
+                {"go macro 813 + 826 + 839", "Copy Image 45  At Image 45 /o"},
+            }
+    
+            for k = 1, 2 do
+                gma.cmd('Store Macro 1.' .. allNum .. '.' .. k)
+                gma.cmd('Assign Macro 1.'..allNum.. '.' .. k .. "/cmd=\"" .. allLines[macroNum][k] .. "\"")
+            end
+        end
+    end
+
+function fixColors()
+    -- Function which creates a macros that fixes the dissapearance of colorvariables upon show reload.
+    local fixLines = {
+    {"setvar $EmptyColors = Image 17 thru 29"},
+    {"setvar $AllColors = Image 33 thru 45"},
+    {"setvar $Fix1Colors = Image 209 thru 221"},
+    {"setvar $Fix2Colors = Image 225 thru 237"},
+    {"setvar $Fix3Colors = Image 241 thru 253"},
+    }
+    gma.cmd('Store Macro 1.799')
+    gma.cmd('label macro 1.799 VarFix')
+
+    for k = 1, 5 do
+        gma.cmd('Store Macro 1.799' .. '.' .. k)
+        gma.cmd('Assign Macro 1.799'.. '.' .. k .. "/cmd=\"" .. fixLines[k][1] .. "\"")
+    end
+end
+
+function layoutStore() -- lav funktion til at vægle hvor mange lamper man skal lave til
+    -- Stores the macros in a layout for later rearragement and use.
+    gma.cmd('store layout 2')
+    gma.cmd('assign macro 801 thru 826 at layout 2')
+end
+
+function main()
+    seq()
+    mac()
+    allChange()
+    fixColors()
+    layoutStore()
+    print('End of plugin')
+end
+
+return main

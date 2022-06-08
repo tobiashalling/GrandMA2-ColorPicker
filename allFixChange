@@ -1,0 +1,44 @@
+function allChange()
+-- construction of all fixture color change macro
+    -- Setting variables for later use
+    gma.cmd('setvar $EmptyColors = "Image 17 thru 29"')
+    gma.cmd('setvar $AllColors = "Image 33 thru 45"')
+    gma.cmd('setvar $Fix1Colors = "Image 209 thru 221"')
+    gma.cmd('setvar $Fix2Colors = "Image 225 thru 237"')
+    gma.cmd('setvar $Fix3Colors = "Image 241 thru 253"')
+    
+    -- Color names for use in renaming
+    local allColors = {
+    'All White', 'All Red', 'All Orange', 'All Yellow', 'All Lime', 'All Green', 
+    'All Coral', 'All Cyan', 'All LightBlue', 'All Blue', 'All Purple', 
+    'All Pink', 'All Magenta',}
+
+    macroNum = 0
+    for i = 1, 13 do
+        local colorNum = i
+        macroNum = macroNum + 1
+        print('macroNum = '..macroNum)
+        
+        -- Creating all color change macros --
+        local allNum = 784 + macroNum
+        gma.cmd('Store Macro 1.'..allNum)
+        gma.cmd('Label Macro 1.'..allNum..' \"'..allColors[i] ..'\"')
+        
+        local allLines = {
+            {"go macro 801 + 814 + 827", "Copy Image 33  At Image 33 /o"}, {"go macro 802 + 815 + 828", "Copy Image 34  At Image 34 /o"}, 
+            {"go macro 803 + 816 + 829", "Copy Image 35  At Image 35 /o"}, {"go macro 804 + 817 + 830", "Copy Image 36  At Image 36 /o"}, 
+            {"go macro 805 + 818 + 831", "Copy Image 37  At Image 37 /o"}, {"go macro 806 + 819 + 832", "Copy Image 38  At Image 38 /o"},
+            {"go macro 807 + 820 + 833", "Copy Image 39  At Image 39 /o"}, {"go macro 808 + 821 + 834", "Copy Image 40  At Image 40 /o"}, 
+            {"go macro 809 + 822 + 835", "Copy Image 41  At Image 41 /o"}, {"go macro 810 + 823 + 836", "Copy Image 42  At Image 42 /o"}, 
+            {"go macro 811 + 824 + 837", "Copy Image 43  At Image 43 /o"}, {"go macro 812 + 825 + 838", "Copy Image 44  At Image 44 /o"},
+            {"go macro 813 + 826 + 839", "Copy Image 45  At Image 45 /o"},
+        }
+
+        for k = 1, 2 do
+            gma.cmd('Store Macro 1.' .. allNum .. '.' .. k)
+            gma.cmd('Assign Macro 1.'..allNum.. '.' .. k .. "/cmd=\"" .. allLines[macroNum][k] .. "\"")
+        end
+    end
+end
+
+return allChange
